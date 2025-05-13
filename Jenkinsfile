@@ -31,6 +31,22 @@ pipeline {
                 bat 'npm audit || exit /b 0' // This will show known CVEs in the output 
             } 
         } 
-    } 
-}
 
+        stage('SonarCloud Analysis') { 
+            steps { 
+                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                    bat '''
+                        set PATH=C:\\Users\\Kyle\\sonar-scanner\\sonar-scanner-4.8.0.2856-windows\\bin;%PATH%
+                        sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=%SONAR_TOKEN%
+                    '''
+                }
+            } 
+        }
+    } 
+
+    post { 
+        always { 
+            echo 'Pipeline execution completed.' 
+        } 
+    }
+}
